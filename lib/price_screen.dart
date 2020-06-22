@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
-import 'coin_data.dart';
-import 'coin_data.dart';
-import 'coin_data.dart';
-import 'coin_data.dart';
-import 'coin_data.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -15,7 +12,7 @@ class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
   CoinData coinData = CoinData();
 
-  List<DropdownMenuItem> getDropdownItems() {
+  DropdownButton<String> androidDropDown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
     for (String currency in currenciesList) {
       var newItem = DropdownMenuItem(
@@ -24,13 +21,43 @@ class _PriceScreenState extends State<PriceScreen> {
       );
       dropdownItems.add(newItem);
     }
-
-    return dropdownItems;
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: dropdownItems,
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value;
+        });
+      },
+    );
   }
+  
+  CupertinoPicker iOSPicker(){
+    List<Text> dropdownItems = [];
+    for (String currency in currenciesList) {
+      dropdownItems.add(Text(currency));
+    }
+    return CupertinoPicker(
+      backgroundColor: Colors.lightBlue,
+      itemExtent: 32.0,
+      onSelectedItemChanged: (selectedIndex) {
+        print(selectedIndex);
+      },
+      children: dropdownItems,
+    );
+  }
+
+  Widget getPicker(){
+    if(Platform.isIOS){
+      return iOSPicker();
+    }else if(Platform.isAndroid){
+      return androidDropDown();
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
-    getDropdownItems();
 
     return Scaffold(
       appBar: AppBar(
@@ -66,14 +93,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-                value: selectedCurrency,
-                items: getDropdownItems(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCurrency = value;
-                  });
-                }),
+            child: Platform.isIOS ? iOSPicker() : androidDropDown(),
           ),
         ],
       ),
