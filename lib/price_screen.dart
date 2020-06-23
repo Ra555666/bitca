@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
+import 'coin_data.dart';
+
+
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -10,7 +13,10 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  String price = 'one';
+
   CoinData coinData = CoinData();
+  double priceUsd = 0 ;
 
   DropdownButton<String> androidDropDown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -47,6 +53,25 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
+  String bitcoinValueInUSD = '?';
+
+  void getDate()async{
+    try{
+      double date = await CoinData().getCoinData();
+      setState(() {
+        bitcoinValueInUSD = date.toStringAsFixed(0);
+      });
+    }catch(e){
+      print(e);
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    getDate();
+  }
+
   Widget getPicker(){
     if(Platform.isIOS){
       return iOSPicker();
@@ -58,7 +83,6 @@ class _PriceScreenState extends State<PriceScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('🤑 Coin Ticker'),
@@ -78,7 +102,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = $bitcoinValueInUSD USD',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
